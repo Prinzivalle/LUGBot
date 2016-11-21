@@ -1,6 +1,6 @@
 {
   "name": "LUGBot",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/bot"
@@ -8,12 +8,12 @@
   "main": "bin/bot",
   "dependencies": {
     "brain": "^0.7.0",
-    "debug": "^2.2.0",
-    "es6-promise": "^3.0.2",
+    "co": "^4.6.0",
+    "debug": "^2.3.0",
     "moment": "^2.10.6",
     "mongodb": "^2.0",
-    "node-schedule": "^0.2.9",
-    "node-telegram-bot-api": "^0.14.0",
+    "node-schedule": "^1.2.0",
+    "node-telegram-bot-api": "^0.24.0",
     "xml2js": "^0.4.9"
   }
 }

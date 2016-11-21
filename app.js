@@ -1,9 +1,9 @@
 'use strict';
 
-var commandManager = require('./modules/command-manager');
-var telegramBot = require('./modules/telegram-bot');
-var genius = require('./modules/genius');
-var speaker = require('./modules/speaker');
+const commandManager = require('./modules/command-manager');
+const telegramBot = require('./modules/telegram-bot');
+const genius = require('./modules/genius');
+const speaker = require('./modules/speaker');
 
 require('./scheduling');
 require('./commands');

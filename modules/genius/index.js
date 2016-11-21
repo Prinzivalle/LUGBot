@@ -1,39 +1,34 @@
 'use strict';
 
-/**
- * Brain is a AI module who simplify the interaction with user recognizing sentences.
- * @module
- */
+const brain = require('brain');
+const phrases = require('./sentences.json');
+const commands = require('../command-manager');
 
-var brain = require('brain');
-var phrases = require('./sentences.json');
-var commands = require('../command-manager');
+const net = new brain.NeuralNetwork();
 
-var net = new brain.NeuralNetwork();
-
-var makeDict = function (str) {
-    var ar = str.split(' ');
-    var oj = {};
+function makeDict(str) {
+  const ar = str.split(' ');
+  const oj = {};
     ar.forEach(function (item) {
         oj[item] = 1;
     });
     return oj;
-};
+}
 
-var normalizeSentence = function (sentence) {
+function normalizeSentence(sentence) {
     return sentence.toLowerCase().replace(/[^a-z ]/g, "");
-};
+}
 
-var init = function () {
-    var data = [];
+function init() {
+  const data = [];
 
-    var keys = Object.keys(phrases);
+  const keys = Object.keys(phrases);
     keys.forEach(function (key) {
-        var list = phrases[key];
+      const list = phrases[key];
         list.forEach(function (p) {
-            var a = {
-                input: makeDict(p),
-                output: {}
+          const a = {
+            input: makeDict(p),
+            output: {}
             };
             a.output[key] = 1;
             data.push(a)
@@ -41,14 +36,14 @@ var init = function () {
     });
 
     net.train(data);
-};
+}
 
 init();
 
 module.exports = {
-    Middleware: function (msg, telegramBot, next) {
-        var stats = net.run(makeDict(normalizeSentence(msg.text)));
-        for (var command in stats) {
+  Middleware: function Middleware(msg, telegramBot, next) {
+    const stats = net.run(makeDict(normalizeSentence(msg.text)));
+    for (let command in stats) {
             if (stats.hasOwnProperty(command) && stats[command] > 0.5) {
                 return commands.commands['/' + command](msg, telegramBot, next);
             }

@@ -1,9 +1,9 @@
 'use strict';
 
-var config = require('../../etc/config');
-var token = config.telegramToken;
-var logger = require('./logger');
-var TelegramBot = require('node-telegram-bot-api');
+const config = require('../../etc/config');
+const token = config.telegramToken;
+const logger = require('./logger');
+const TelegramBot = require('node-telegram-bot-api');
 
 TelegramBot.prototype.attachCommandManager = function (commandManager) {
   this.on('message', function (msg) {

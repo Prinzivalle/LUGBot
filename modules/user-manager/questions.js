@@ -1,14 +1,14 @@
 'use strict';
 
-var dipartimenti = require('../dipartimenti');
-var speaker = require('../speaker');
-var utils = require('../utils');
-var InputValidationError = require('../../lib/errors').InputValidationError;
+const dipartimenti = require('../dipartimenti');
+const speaker = require('../speaker');
+const utils = require('../utils');
+const InputValidationError = require('../../lib/errors').InputValidationError;
 
-var askDipartimento = function (telegramId, telegramBot, question) {
-    var nDipartimenti = dipartimenti.length - 1;
-    var cols = 4;
-    var message = "Di quale dipartimento fai parte?";
+var askDipartimento = function (telegramId, telegramBot) {
+  const nDipartimenti = dipartimenti.length - 1;
+  const cols = 4;
+  let message = "Di quale dipartimento fai parte?";
     for (var i = 1; i < dipartimenti.length; i++) {
         message += '\n' + i + ') ' + dipartimenti[i].name;
     }
@@ -21,15 +21,17 @@ var askDipartimento = function (telegramId, telegramBot, question) {
     });
 };
 
-var responseDipartimento = function (msg, telegramBot, question) {
-    var dipartimentoUtente = parseInt(msg.text);
+var responseDipartimento = function (msg, telegramBot) {
+  const dipartimentoUtente = parseInt(msg.text);
     if (dipartimentoUtente) {
-        if (dipartimentoUtente > dipartimenti.length - 1 || dipartimentoUtente < 1)
-            return question.reject(new InputValidationError('Questo numero non è un dipartimento valido.'));
-        return question.resolve(dipartimentoUtente);
+      if (dipartimentoUtente > dipartimenti.length - 1 || dipartimentoUtente < 1) {
+        return Promise.reject(new InputValidationError('Questo numero non è un dipartimento valido.'));
+      } else {
+        return Promise.resolve(dipartimentoUtente);
+      }
     } else {
-        return question.reject(new InputValidationError('Ho bisogno del numero del dipartimento per capire cosa intendi.'))
+      return Promise.reject(new InputValidationError('Ho bisogno del numero del dipartimento per capire cosa intendi.'))
     }
 };
 
-speaker.addQuestion('dipartimento').ask(askDipartimento).response(responseDipartimento);
+speaker.addQuestion('dipartimento', askDipartimento, responseDipartimento);

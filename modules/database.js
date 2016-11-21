@@ -1,8 +1,8 @@
 'use strict';
 
-var mongoDbUrl = require('../etc/config').mongoDbUrl;
-var MongoClient = require('mongodb').MongoClient;
-var db = null;
+const mongoDbUrl = require('../etc/config').mongoDbUrl;
+const MongoClient = require('mongodb').MongoClient;
+let db = null;
 
 module.exports = {
   /**
@@ -35,8 +35,8 @@ module.exports = {
    */
   updateNews: function (news) {
     return new Promise(function (resolve, reject) {
-      var collection = db.collection('news');
-      var promises = [];
+      const collection = db.collection('news');
+      const promises = [];
       news.forEach(function (element) {
         promises.push(collection.updateOne({titolo: element.titolo}, element, {upsert: true}));
       });

@@ -5,84 +5,68 @@
  * @module
  */
 
-/**
- * @constructor
- */
-var Speaker = function () {
+class Speaker {
+  /**
+   * @constructor
+   */
+  constructor() {
     this.questionsPending = {};
     this.questionNames = {};
-};
+  }
 
-/**
- * Adds a new question.
- *
- * e.g.
- * speaker
- *   .addQuestionType('questionName')
- *   .ask(function (telegramId, telegramBot, question) {})
- *   .response(function (msg, telegramBot, question) {question.resolve(data)});
- * @param questionName {string} the name of this
- * @returns {{ask: Function, response: Function}}
- */
-Speaker.prototype.addQuestion = function (questionName) {
-    var q = this.questionNames[questionName] = {
-        askF: null,
-        responseF: null
+  /**
+   * Adds a new question.
+   *
+   * @param questionName {string} the name of this
+   * @param askF {function} function (telegramId, telegramBot, question) {}
+   * @param responseF {function} function (msg, telegramBot, question) {return Promise.resolve(data)}
+   */
+  addQuestion(questionName, askF, responseF) {
+    this.questionNames[questionName] = {
+      askF: askF,
+      responseF: responseF
     };
-    var that = {
-        ask: function (cb) {
-            q.askF = cb;
-            return that;
-        },
-        response: function (cb) {
-            q.responseF = cb;
-            return that;
-        }
-    };
-    return that;
-};
+  }
 
-/**
- /**
- * Asks a question
- * @param questionName {string}
- * @param telegramId {number}
- * @param telegramBot {TelegramBot}
- * @returns {Promise}
- */
-Speaker.prototype.ask = function (questionName, telegramId, telegramBot) {
-    var that = this;
+  /**
+   * Asks a question
+   * @param questionName {string}
+   * @param telegramId {number}
+   * @param telegramBot {TelegramBot}
+   * @returns {Promise}
+   */
+  ask(questionName, telegramId, telegramBot) {
+    const that = this;
     if (typeof this.questionNames[questionName] === 'undefined') {
-        throw new Error('Question not defined');
+      throw new Error('Question not defined');
     }
     return new Promise(function (resolve, reject) {
-        var question = {
+      that.questionsPending[telegramId] = {
             telegramId: telegramId,
             questionName: questionName,
             resolve: function (data) {
-                delete that.questionsPending[telegramId];
-                resolve(data)
+              delete that.questionsPending[telegramId];
+              resolve(data)
             },
             reject: function (err) {
-                delete that.questionsPending[telegramId];
-                reject(err)
+              delete that.questionsPending[telegramId];
+              reject(err)
             }
-        };
-        that.questionsPending[telegramId] = question;
-        that.questionNames[questionName].askF(telegramId, telegramBot, question);
+      };
+      that.questionNames[questionName].askF(telegramId, telegramBot);
     });
-};
+  }
 
-Speaker.prototype.handleResponse = function (msg, telegramBot) {
-    var question = this.questionsPending[msg.from.id];
+  handleResponse(msg, telegramBot) {
+    const question = this.questionsPending[msg.from.id];
     if (typeof question === 'undefined') return false;
-    var questionName = question.questionName;
-    this.questionNames[questionName].responseF(msg, telegramBot, question);
-    //response.call(this, msg, telegramBot, question);
+    const questionName = question.questionName;
+    this.questionNames[questionName].responseF(msg, telegramBot).then(question.resolve).catch(question.reject);
     return true;
-};
+  }
+}
 
-var speaker = new Speaker();
+const speaker = new Speaker();
 speaker.Middleware = function (msg, telegramBot, next) {
     if (!speaker.handleResponse(msg, telegramBot)) {
         next();

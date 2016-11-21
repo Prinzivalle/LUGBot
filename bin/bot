@@ -11,8 +11,7 @@ process.on('uncaughtException', function (err) {
     console.error(err.stack)
 });
 
-require('es6-promise').polyfill(); // EcmaScript6 Promise compatibility for old versions of Node.js
-var database = require('../modules/database');
+const database = require('../modules/database');
 
 database.connect().then(function (db) {
     require('../app');

@@ -2,41 +2,43 @@
 
 var db = require('../database').db;
 
-var ConversationLogger = function () {
+class ConversationLogger {
+  constructor() {
     this.conversationCollection = db.collection('conversations');
-};
+  }
 
-/**
- * Log a message
- * @param {number} chatId
- * @param {string} message
- * @param {boolean} isSent
- * @returns {Promise}
- */
-ConversationLogger.prototype.log = function (chatId, message, isSent) {
+  /**
+   * Log a message
+   * @param {number} chatId
+   * @param {string} message
+   * @param {boolean} isSent
+   * @returns {Promise}
+   */
+  log(chatId, message, isSent) {
     return this.conversationCollection.insertOne({
-        message: message,
-        chatId: chatId,
-        isSent: isSent
+      message: message,
+      chatId: chatId,
+      isSent: isSent
     });
-};
+  }
 
-/**
- * Get a list of chatid
- * @returns {Promise}
- */
-ConversationLogger.prototype.getConversationsList = function () {
+  /**
+   * Get a list of chatid
+   * @returns {Promise}
+   */
+  getConversationsList() {
     return this.conversationCollection.distinct('chatId', {});
-};
+  }
 
-/**
- * Get conversation by chatid
- * @param chatId
- * @returns {Cursor}
- */
-ConversationLogger.prototype.getConversation = function (chatId) {
+  /**
+   * Get conversation by chatid
+   * @param chatId
+   * @returns {Cursor}
+   */
+  getConversation(chatId) {
     return this.conversationCollection.find({chatId: chatId});
-};
+  }
+}
 
 
 module.exports = new ConversationLogger();

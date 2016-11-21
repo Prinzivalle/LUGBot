@@ -1,3 +1,13 @@
+## 2.0.0 (28/11/2016)
+### Breaking changes
+
+- Switched to ES6
+
+#### In Speaking module
+
+- response function now must return a Promise 
+- `addQuestion()` has different syntax
+
 ## 1.1.1 (16/10/2015)
 
 - Configurazione opzionale webHook.url aggiunta in etc/config.sample.js
