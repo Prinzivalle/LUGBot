@@ -10,7 +10,10 @@ const errors = require('../lib/errors');
  * @param {TelegramBot} telegramBot
  */
 exports.auleLibereCommand = function auleLibereCommand(msg, telegramBot) {
-  const hideKeyboardOpts = {reply_markup: JSON.stringify({remove_keyboard: true})};
+  const sendMessageOptions = {
+    reply_markup: JSON.stringify({remove_keyboard: true}),
+    parse_mode: 'HTML'
+  };
   const user = new User(msg.from.id, telegramBot);
   user.getDipartimento()
     .then(getAuleLibereFromDipartimentoId)
@@ -19,12 +22,12 @@ exports.auleLibereCommand = function auleLibereCommand(msg, telegramBot) {
     .catch(errorHandler);
 
   function sendMessage(message) {
-    return telegramBot.sendMessage(msg.chat.id, message, hideKeyboardOpts);
+    return telegramBot.sendMessage(msg.chat.id, message, sendMessageOptions);
   }
 
   function errorHandler(err) {
     if (err instanceof errors.InputValidationError) {
-      telegramBot.sendMessage(msg.chat.id, err.message, hideKeyboardOpts);
+      telegramBot.sendMessage(msg.chat.id, err.message, sendMessageOptions);
     }
     else {
       errors.handleGenericError(err, msg, telegramBot);
@@ -54,12 +57,12 @@ function getAuleLibereMessage(auleLibere) {
 
   let message = `Lista delle aule dove non c'è lezione:`;
   for (let aula of auleLibere) {
-    message += `\n - ${aula.aula}`;
+    message += `\n &#8226; <b>${aula.aula}</b> `;
     if (aula.date.getDate() == new Date().getDate()) {
-      message += ` fino alle ${moment(aula.date).format('HH:mm')}`;
+      message += `fino alle ${moment(aula.date).format('HH:mm')}`;
     }
     else {
-      message += ' fino alla chiusura';
+      message += 'fino alla chiusura';
     }
   }
   return message;
