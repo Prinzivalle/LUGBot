@@ -7,14 +7,15 @@ process.env.TZ = 'Europe/Rome';
 // catch the uncaught errors that weren't wrapped in a domain or try catch statement
 // do not use this in modules, but only in applications, as otherwise we could have multiple of these bound
 process.on('uncaughtException', function (err) {
-    // handle the error safely
-    console.error(err.stack)
+  // handle the error safely
+  console.error(err.stack)
 });
 
 const database = require('../modules/database');
 
-database.connect().then(function (db) {
-    require('../app');
-}).catch(function (err) {
+database.connect()
+  .then(database.loadCollections)
+  .then(()=>require('../app'))
+  .catch(function (err) {
     console.error(err.stack);
-});
+  });

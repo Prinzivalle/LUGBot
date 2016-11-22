@@ -3,11 +3,10 @@
 const xml2js = require('xml2js');
 const util = require('util');
 const http = require('http');
-const db = require('../database').db;
+const database = require('../database');
+const auleCollections = database.collections.aule;
+const orariCollections = database.collections.orari;
 const dipartimenti = require('../dipartimenti');
-
-const ORARI_COLLECTION = 'orari';
-const AULE_COLLECTION = 'aule';
 
 class OrariRomaTre {
   constructor() {
@@ -15,6 +14,7 @@ class OrariRomaTre {
 
   /**
    * Update the local database with data fetched from orari.uniroma3.it/$$$/esporta.php
+   * @return {Promise}
    */
   updateDb() {
     return new Promise(function (resolve, reject) {
@@ -56,7 +56,7 @@ class OrariRomaTre {
     return new Promise(function (resolve, reject) {
       const auleObj = {};
       const auleArr = [];
-      db.collection(ORARI_COLLECTION).find({
+      orariCollections.find({
         dateFine: {$gte: fromDate, $lte: toDate},
         dipartimento: dipartimento.id
       }, {
@@ -134,7 +134,7 @@ function fetchOrari(dipartimento, fromDate, toDate) {
 function updateOrari(facolta, dipartimento) {
   return new Promise(function (resolve, reject) {
 
-    db.collection(ORARI_COLLECTION).deleteMany({
+    orariCollections.deleteMany({
       dipartimento: dipartimento.id
     }).then(function () {
       const lezioni = facolta['corsoLaurea'];
@@ -160,20 +160,19 @@ function updateOrari(facolta, dipartimento) {
             const orarioInizio = eventoFormativo['orarioInizio'][0];
             const orarioFine = eventoFormativo['orarioFine'][0];
             promises.push(
-              db.collection(ORARI_COLLECTION)
-                .insertOne({
-                  dipartimento: dipartimento.id,
-                  corsoLaurea: corsoLaurea,
-                  denominazione: denominazione,
-                  dettagli: dettagli,
-                  docente: docente,
-                  aula: aula,
-                  giorno: giorno,
-                  orarioInizio: orarioInizio,
-                  orarioFine: orarioFine,
-                  dateInizio: new Date(giorno + ' ' + orarioInizio),
-                  dateFine: new Date(giorno + ' ' + orarioFine)
-                }));
+              orariCollections.insertOne({
+                dipartimento: dipartimento.id,
+                corsoLaurea: corsoLaurea,
+                denominazione: denominazione,
+                dettagli: dettagli,
+                docente: docente,
+                aula: aula,
+                giorno: giorno,
+                orarioInizio: orarioInizio,
+                orarioFine: orarioFine,
+                dateInizio: new Date(giorno + ' ' + orarioInizio),
+                dateFine: new Date(giorno + ' ' + orarioFine)
+              }));
           }
         }
       }
@@ -192,7 +191,7 @@ function updateOrari(facolta, dipartimento) {
  */
 function updateAule(facolta, dipartimento) {
   return new Promise(function (resolve, reject) {
-    db.collection(AULE_COLLECTION).deleteMany({
+    auleCollections.deleteMany({
       dipartimento: dipartimento.id
     }).then(function () {
 
@@ -204,7 +203,7 @@ function updateAule(facolta, dipartimento) {
       for (let i = 0; i < aule.length; i++) {
         const aula = aule[i];
         const capacita = capacitas[i];
-        promises.push(db.collection(AULE_COLLECTION).insertOne({
+        promises.push(auleCollections.insertOne({
           dipartimento: dipartimento.id,
           nome: aula,
           capacita: capacita

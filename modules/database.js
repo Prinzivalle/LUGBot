@@ -3,6 +3,7 @@
 const mongoDbUrl = require('../etc/config').mongoDbUrl;
 const MongoClient = require('mongodb').MongoClient;
 let db = null;
+const collections = {};
 
 module.exports = {
   /**
@@ -11,6 +12,10 @@ module.exports = {
    */
   get db() {
     return db;
+  },
+
+  get collections() {
+    return collections;
   },
 
   /**
@@ -26,6 +31,17 @@ module.exports = {
         resolve(db);
       });
     });
+  },
+
+  /**
+   *
+   * @param {Db} db
+   */
+  loadCollections: function (db) {
+    collections.conversations = db.collection('conversations');
+    collections.users = db.collection('users');
+    collections.orari = db.collection('orari');
+    collections.aule = db.collection('aule');
   },
 
   /**

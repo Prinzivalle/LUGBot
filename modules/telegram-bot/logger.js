@@ -1,10 +1,9 @@
 'use strict';
 
-var db = require('../database').db;
+const conversationsCollection = require('../database').collections.conversations;
 
 class ConversationLogger {
   constructor() {
-    this.conversationCollection = db.collection('conversations');
   }
 
   /**
@@ -15,7 +14,7 @@ class ConversationLogger {
    * @returns {Promise}
    */
   log(chatId, message, isSent) {
-    return this.conversationCollection.insertOne({
+    return conversationsCollection.insertOne({
       message: message,
       chatId: chatId,
       isSent: isSent
@@ -27,7 +26,7 @@ class ConversationLogger {
    * @returns {Promise}
    */
   getConversationsList() {
-    return this.conversationCollection.distinct('chatId', {});
+    return conversationsCollection.distinct('chatId', {});
   }
 
   /**
@@ -36,9 +35,8 @@ class ConversationLogger {
    * @returns {Cursor}
    */
   getConversation(chatId) {
-    return this.conversationCollection.find({chatId: chatId});
+    return conversationsCollection.find({chatId: chatId});
   }
 }
-
 
 module.exports = new ConversationLogger();

@@ -1,20 +1,19 @@
 'use strict';
 
-var database = require('../database').db;
+var usersCollection = require('../database').collections.users;
 var speaker = require('../speaker');
 var co = require('co');
 
 class User {
   /**
    * Create or get a new User.
-   * @param telegramId
-   * @param telegramBot
+   * @param {number} telegramId
+   * @param {TelegramBot} telegramBot
    * @constructor
    */
   constructor(telegramId, telegramBot) {
-    this.telegramBot = telegramBot;
     this.telegramId = telegramId;
-    this.collection = database.collection('users');
+    this.telegramBot = telegramBot;
   }
 
   /**
@@ -33,7 +32,7 @@ class User {
   }
 
   update(update) {
-    return this.collection.updateOne({telegramId: this.telegramId}, {$set: update});
+    return usersCollection.updateOne({telegramId: this.telegramId}, {$set: update});
   }
 
   /**
@@ -42,9 +41,8 @@ class User {
    * @returns {Promise}
    */
   getUser() {
-    const collection = this.collection;
     const telegramId = this.telegramId;
-    return collection.find({telegramId: telegramId}).limit(1).next().then(function (user) {
+    return usersCollection.find({telegramId: telegramId}).limit(1).next().then(function (user) {
       if (user == null) {
         return collection.insertOne({
           telegramId: telegramId
@@ -60,7 +58,7 @@ class User {
    * @returns {Promise}
    */
   forget() {
-    return this.collection.removeOne({telegramId: this.telegramId});
+    return usersCollection.removeOne({telegramId: this.telegramId});
   }
 }
 
