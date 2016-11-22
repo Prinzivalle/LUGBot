@@ -11,6 +11,9 @@ process.on('uncaughtException', function (err) {
   console.error(err.stack)
 });
 
+const moment = require('moment');
+moment.locale('it');
+
 const database = require('../modules/database');
 
 database.connect()

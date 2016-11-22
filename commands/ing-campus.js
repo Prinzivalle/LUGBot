@@ -2,35 +2,16 @@
 
 const http = require("http");
 const errors = require('../lib/errors');
+const moment = require('moment');
 
-exports.postiLiberiCampusCommand = function postiLiberiCampusCommand(msg, telegramBot) {
 
-  var req = http.request({
-    hostname: 'muglab.uniroma3.it',
-    path: '/campus/statoCampus.txt'
-  }, (res) => {
-    const parser = new StatoCampusParser();
-    res.on('data', parser.parse.bind(parser));
-    res.on('end', () => {
-      telegramBot.sendMessage(msg.chat.id, `Posti aula "Campus One":` +
-        `\nliberi: ${parser.free}` +
-        `\noccupati: ${parser.busy}`);
-    });
-  });
-
-  req.on('error', (e) => {
-    errors.handleGenericError(e, msg, telegramBot);
-  });
-
-  req.end();
-};
-
-class StatoCampusParser {
+class CampusConditionParser {
 
   constructor() {
     this.free = 0;
     this.busy = 0;
-    this.isFinished = false;
+    this.data = "";
+    this.lastUpdatedDate = null;
   }
 
   /**
@@ -39,13 +20,89 @@ class StatoCampusParser {
    * @return {boolean} isFinished
    */
   parse(chunk) {
-    if (this.isFinished) return true;
-    for (let i = 0; i < chunk.length; i++) {
-      const c = chunk[i];
-      if (c == 48) this.busy++;
-      else if (c == 49) this.free++;
-      else return this.isFinished = true;
+    this.data += chunk;
+  }
+
+  end() {
+    const data = this.data.toString().split('\n');
+    const seatsData = data[0];
+    this.lastUpdatedDate = new Date(data[1]);
+    for (let i = 0; i < seatsData.length; i++) {
+      const c = seatsData[i];
+      if (c == '0') this.busy++;
+      else if (c == '1') this.free++;
     }
-    return false;
   }
 }
+
+
+class CampusCondition {
+
+  constructor() {
+    this.free = 0;
+    this.busy = 0;
+    this.lastUpdatedDate = null;
+    this.requestDate = 0;
+  }
+
+  get total() {
+    return this.free + this.busy;
+  }
+
+  /**
+   *
+   * @return {Promise.<CampusCondition>}
+   */
+  getCondition() {
+    if ((Date.now() - this.requestDate) < 60000) {
+      return Promise.resolve(this);
+    }
+    return this.update().then(() => this);
+  }
+
+  /**
+   * @private
+   * @return {Promise}
+   */
+  update() {
+    return new Promise(function (resolve, reject) {
+      const req = http.request({
+        hostname: 'muglab.uniroma3.it',
+        path: '/campus/statoCampus.txt'
+      }, (res) => {
+        const parser = new CampusConditionParser();
+        res.on('data', parser.parse.bind(parser));
+        res.on('end', () => {
+          parser.end();
+          this.free = parser.free;
+          this.busy = parser.busy;
+          this.lastUpdatedDate = parser.lastUpdatedDate;
+          this.requestDate = Date.now();
+          resolve();
+        });
+      });
+
+      req.on('error', reject);
+
+      req.end();
+    }.bind(this));
+  }
+
+}
+
+
+const campusCondition = new CampusCondition();
+exports.postiLiberiCampusCommand = function postiLiberiCampusCommand(msg, telegramBot) {
+
+  campusCondition.getCondition()
+    .then(condition => {
+      telegramBot.sendMessage(msg.chat.id,
+        `Posti liberi Aula Campus: <b>${condition.free}</b>/${condition.total}.` +
+        `\n\nAggiornato ${moment(condition.lastUpdatedDate).fromNow()}.`,
+        {parse_mode: 'HTML'}
+      );
+    })
+    .catch(e => {
+      errors.handleGenericError(e, msg, telegramBot);
+    });
+};
