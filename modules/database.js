@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('bot:database');
 const mongoDbUrl = require('../etc/config').mongoDbUrl;
 const MongoClient = require('mongodb').MongoClient;
 let db = null;
@@ -27,7 +28,7 @@ module.exports = {
       MongoClient.connect(mongoDbUrl, {promiseLibrary: Promise}, function (err, database) {
         if (err) return reject(err);
         db = database;
-        console.log('Db connected');
+        debug('MongoClient connected');
         resolve(db);
       });
     });

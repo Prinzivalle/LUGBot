@@ -9,7 +9,7 @@
   "dependencies": {
     "brain": "^0.7.0",
     "co": "^4.6.0",
-    "debug": "^2.3.0",
+    "debug": "https://registry.npmjs.org/debug/-/debug-2.3.3.tgz",
     "moment": "^2.10.6",
     "mongodb": "^2.0",
     "node-schedule": "^1.2.0",

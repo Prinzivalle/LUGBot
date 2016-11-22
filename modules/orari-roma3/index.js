@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('bot:orari-roma3');
 const xml2js = require('xml2js');
 const util = require('util');
 const http = require('http');
@@ -25,11 +26,10 @@ class OrariRomaTre {
           promises.push(updateDipartimentoDb(dipartimento));
       });
       Promise.all(promises).then(function (values) {
-        console.log('Db Updated');
+        debug('Database updated');
         resolve(values);
       }).catch(function (err) {
-        console.error(err.message);
-        console.error(err.stack);
+        debug(err);
         reject(err);
       });
     });
@@ -118,7 +118,7 @@ function fetchOrari(dipartimento, fromDate, toDate) {
       res.on('data', function (chunk) {
         output += chunk;
       }).on('end', function () {
-        console.log("[ORARI] HTTP done: " + url);
+        debug("HTTP done: " + url);
         parser.parseString(output);
       });
     }).on('error', reject);

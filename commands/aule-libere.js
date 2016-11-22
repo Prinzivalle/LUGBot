@@ -47,12 +47,12 @@ function getAuleLibereFromDipartimentoId(dipartimentoId) {
  * @return {string}
  */
 function getAuleLibereMessage(auleLibere) {
-  let message = '';
   if (auleLibere.length == 0) {
-    return message = 'Scusa ma non sono riuscito a trovare aule libere nel tuo dipartimento.\n' +
+    return 'Scusa ma non sono riuscito a trovare aule libere nel tuo dipartimento.\n' +
       'Potrebbero non esserci aule libere in questo momento, oppure un problema sui server di Ateneo';
   }
-  message = `Lista delle aule dove non c'è lezione:`;
+
+  let message = `Lista delle aule dove non c'è lezione:`;
   for (let aula of auleLibere) {
     message += `\n - ${aula.aula}`;
     if (aula.date.getDate() == new Date().getDate()) {

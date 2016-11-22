@@ -130,7 +130,7 @@
     },
     "debug": {
       "version": "2.3.3",
-      "from": "debug@2.3.3",
+      "from": "https://registry.npmjs.org/debug/-/debug-2.3.3.tgz",
       "resolved": "https://registry.npmjs.org/debug/-/debug-2.3.3.tgz"
     },
     "delayed-stream": {
