@@ -18,7 +18,7 @@ class User {
 
   /**
    * Get the user dipartimento. If it's undefined ask the user for it.
-   * @returns {Promise}
+   * @returns {Promise.<number>}
    */
   getDipartimento() {
     return co(function*() {
@@ -44,7 +44,7 @@ class User {
     const telegramId = this.telegramId;
     return usersCollection.find({telegramId: telegramId}).limit(1).next().then(function (user) {
       if (user == null) {
-        return collection.insertOne({
+        return usersCollection.insertOne({
           telegramId: telegramId
         });
       }

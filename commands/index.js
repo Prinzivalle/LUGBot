@@ -7,23 +7,13 @@ const dipartimenti = require('../modules/dipartimenti');
 const User = require('../modules/user-manager').User;
 const errors = require('../lib/errors');
 
+const startCommand = require('./start-help').startCommand;
+const helpCommand = require('./start-help').helpCommand;
 const auleLibereCommand = require('./aule-libere').auleLibereCommand;
 const postiLiberiCampusCommand = require('./ing-campus').postiLiberiCampusCommand;
 
-const listaComandi = '/aulelibere - Mostra le aule libere adesso' +
-  '\n/dimenticami - Elimina le tue informazioni personali' +
-  '\n/help - Mostra la lista dei comandi disponibili';
-
-commands.on('/start', (msg, telegramBot) => {
-  telegramBot.sendMessage(msg.chat.id, 'Ciao! Di cosa hai bisogno?' +
-    '\n' + listaComandi)
-});
-
-commands.on('/help', (msg, telegramBot) => {
-  telegramBot.sendMessage(msg.chat.id, 'Ecco la lista delle cose che puoi chiedermi:\n' +
-    '\n' + listaComandi)
-});
-
+commands.on('/start', startCommand);
+commands.on('/help', helpCommand);
 commands.on('/aulelibere', auleLibereCommand);
 commands.on('/campus', postiLiberiCampusCommand);
 
