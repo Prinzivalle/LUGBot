@@ -38,11 +38,12 @@ class CampusConditionParser {
 
 class CampusCondition {
 
-  constructor() {
+  constructor(urlPath) {
     this.free = 0;
     this.busy = 0;
     this.lastUpdatedDate = null;
     this.requestDate = 0;
+    this.urlPath = urlPath;
   }
 
   get total() {
@@ -68,7 +69,7 @@ class CampusCondition {
     return new Promise(function (resolve, reject) {
       const req = http.request({
         hostname: 'muglab.uniroma3.it',
-        path: '/campus/statoCampus.txt'
+        path: this.urlPath
       }, (res) => {
         const parser = new CampusConditionParser();
         res.on('data', parser.parse.bind(parser));
@@ -91,14 +92,18 @@ class CampusCondition {
 }
 
 
-const campusCondition = new CampusCondition();
+const campusCondition = new CampusCondition('/campus/statoCampus.txt');
+const arataCondition = new CampusCondition('/campus/statoArata.txt');
 exports.postiLiberiCampusCommand = function postiLiberiCampusCommand(msg, telegramBot) {
 
-  campusCondition.getCondition()
-    .then(condition => {
+  arataCondition.getCondition()
+    .then(campusCondition.getCondition.bind(campusCondition))
+    .then(() => {
       telegramBot.sendMessage(msg.chat.id,
-        `Posti liberi Aula Campus: <b>${condition.free}</b>/${condition.total}.` +
-        `\n\nAggiornato ${moment(condition.lastUpdatedDate).fromNow()}.`,
+        `Posti liberi Aula Campus: <b>${campusCondition.free}</b>/${campusCondition.total},` +
+        `\n<i>aggiornato ${moment(campusCondition.lastUpdatedDate).fromNow()}</i>.` +
+        `\n\nPosti liberi Aula Arata: <b>${arataCondition.free}</b>/${arataCondition.total},` +
+        `\n<i>aggiornato ${moment(arataCondition.lastUpdatedDate).fromNow()}</i>.`,
         {parse_mode: 'HTML'}
       );
     })
