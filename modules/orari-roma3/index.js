@@ -36,9 +36,16 @@ class OrariRomaTre {
   }
 
   /**
+   * This object represent a free room
+   * @typedef {object} AulaLibera
+   * @property {string} - aula name of the room
+   * @property {Date} - date time when this room will become busy
+   */
+
+  /**
    * Ritorna una lista di aule libere
    * @params {object} dipartimento
-   * @return {Promise}
+   * @return {Promise.<AulaLibera[]>}
    */
   getAuleLibere(dipartimento) {
     const todayDate = new Date();

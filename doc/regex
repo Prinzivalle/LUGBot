@@ -1,0 +1,4 @@
+Use this regex to parse telegram documentation fields types. May fail if Type has multiple words.
+
+FROM: ^([^\s/]+)\s([^\s/]+)\s(.*)$
+  TO: * @property {$2} $1 - $3
