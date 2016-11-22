@@ -5,24 +5,29 @@ const token = config.telegramToken;
 const logger = require('./logger');
 const TelegramBot = require('node-telegram-bot-api');
 
-TelegramBot.prototype.attachCommandManager = function (commandManager) {
-  this.on('message', function (msg) {
-    logger.log(msg.chat.id, msg.text, false); // Log message
-    commandManager.handleMessage(msg, telegramBot)
-  });
-  this.on('error', function eventEmitterCallback(err) {
-    console.error(err.stack);
-  });
-};
+class MyTelegramBot extends TelegramBot {
 
-TelegramBot.prototype.sendMessage = (function (superSendMessage) {
-  return function (chatId, message, options) {
+  attachCommandManager(commandManager) {
+    this.on('message', function (msg) {
+      logger.log(msg.chat.id, msg.text, false); // Log message
+      commandManager.handleMessage(msg, telegramBot)
+    });
+    this.on('error', function eventEmitterCallback(err) {
+      console.error(err.stack);
+    });
+  };
+
+  sendMessage(chatId, message, options) {
     logger.log(chatId, message, true);
-    superSendMessage.call(this, chatId, message, options);
-  }
-})(TelegramBot.prototype.sendMessage); // Log message
+    super.sendMessage(chatId, message, options);
+  };
 
-var telegramBot = new TelegramBot(token, {
+}
+
+/**
+ * @type {MyTelegramBot}
+ */
+var telegramBot = new MyTelegramBot(token, {
   webHook: config['webHook'],
   polling: config['polling']
 });
