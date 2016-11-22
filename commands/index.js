@@ -8,6 +8,7 @@ const User = require('../modules/user-manager').User;
 const errors = require('../lib/errors');
 
 const auleLibereCommand = require('./aule-libere').auleLibereCommand;
+const postiLiberiCampusCommand = require('./ing-campus').postiLiberiCampusCommand;
 
 const listaComandi = '/aulelibere - Mostra le aule libere adesso' +
   '\n/dimenticami - Elimina le tue informazioni personali' +
@@ -24,6 +25,7 @@ commands.on('/help', (msg, telegramBot) => {
 });
 
 commands.on('/aulelibere', auleLibereCommand);
+commands.on('/campus', postiLiberiCampusCommand);
 
 commands.on('/lezioni', (msg, telegramBot)=> {
   telegramBot.sendMessage(msg.chat.id, 'Mi dispiace, ma gli scansafatiche del LUG Roma Tre ancora non mi hanno' +
