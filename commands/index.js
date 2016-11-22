@@ -7,10 +7,7 @@ const dipartimenti = require('../modules/dipartimenti');
 const User = require('../modules/user-manager').User;
 const errors = require('../lib/errors');
 
-const handleError = function (err, msg, telegramBot) {
-  telegramBot.sendMessage(msg.chat.id, "Si è verificato un errore, verrà risolto al più presto");
-  console.error(err.stack);
-};
+const auleLibereCommand = require('./aule-libere').auleLibereCommand;
 
 const listaComandi = '/aulelibere - Mostra le aule libere adesso' +
   '\n/dimenticami - Elimina le tue informazioni personali' +
@@ -26,35 +23,7 @@ commands.on('/help', (msg, telegramBot) => {
     '\n' + listaComandi)
 });
 
-commands.on('/aulelibere', (msg, telegramBot) => {
-  const hideKeyboardOpts = {reply_markup: JSON.stringify({hide_keyboard: true})};
-  const user = new User(msg.from.id, telegramBot);
-  user.getDipartimento().then(dipartimentoId=>
-    orari.getAuleLibere(dipartimenti[dipartimentoId])
-  ).then(aule=> {
-    let message = '';
-    if (aule.length == 0)
-      return message = 'Scusa ma non sono riuscito a trovare aule libere nel tuo dipartimento.\n' +
-        'Potrebbero non esserci aule libere in questo momento, oppure un problema sui server di Ateneo';
-
-    message = 'Eccoti una lista delle aule libere (sperando non siano chiuse!):';
-    aule.forEach(function (item) {
-      message += '\n - ' + item.aula;
-      if (item.date.getDate() == new Date().getDate())
-        message += ' fino alle ' + moment(item.date).format('HH:mm');
-      else
-        message += ' fino alla chiusura';
-    });
-    return message;
-  }).then(message=>
-    telegramBot.sendMessage(msg.chat.id, message, hideKeyboardOpts)
-  ).catch(err=> {
-    if (err instanceof errors.InputValidationError)
-      telegramBot.sendMessage(msg.chat.id, err.message, hideKeyboardOpts);
-    else
-      handleError(err, msg, telegramBot);
-  });
-});
+commands.on('/aulelibere', auleLibereCommand);
 
 commands.on('/lezioni', (msg, telegramBot)=> {
   telegramBot.sendMessage(msg.chat.id, 'Mi dispiace, ma gli scansafatiche del LUG Roma Tre ancora non mi hanno' +
@@ -66,7 +35,7 @@ commands.on('/dimenticami', (msg, telegramBot)=> {
   user.forget().then(function () {
     telegramBot.sendMessage(msg.chat.id, 'Ooh che mal di testa... Non mi ricordo più chi sei!')
   }).catch(function (err) {
-    handleError(err, msg, telegramBot);
+    errors.handleGenericError(err, msg, telegramBot);
   });
 });
 
