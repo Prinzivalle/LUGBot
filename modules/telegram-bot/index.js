@@ -18,7 +18,8 @@ class MyTelegramBot extends TelegramBot {
   };
 
   sendMessage(chatId, message, options) {
-    logger.log(chatId, message, true);
+    // DISABLED LOGGER
+    // logger.log(chatId, message, true);
     super.sendMessage(chatId, message, options);
   };
 
