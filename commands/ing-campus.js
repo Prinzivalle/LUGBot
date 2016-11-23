@@ -29,8 +29,8 @@ class CampusConditionParser {
     this.lastUpdatedDate = new Date(data[1]);
     for (let i = 0; i < seatsData.length; i++) {
       const c = seatsData[i];
-      if (c == '0') this.busy++;
-      else if (c == '1') this.free++;
+      if (c == '0') this.free++;
+      else if (c == '1') this.busy++;
     }
   }
 }
