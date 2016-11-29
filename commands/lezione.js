@@ -3,9 +3,16 @@
 const moment = require('moment');
 const orariRoma3 = require('../modules/orari-roma3');
 const User = require('../modules/user-manager').User;
+const emoji = require('node-emoji');
+
+const disappointedMessage = "Mi dispiace, non ho trovato nulla! " + emoji.get('disappointed');
+const helpMessage = "uso comando: /lezione &lt;query di ricerca&gt;";
 
 exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
-  const query = msg.text.substr(msg.text.indexOf(' ') + 1);
+  const spaceIndex = msg.text.indexOf(' ');
+  if (spaceIndex == -1) return sendMessage(helpMessage);
+
+  const query = msg.text.substr(spaceIndex + 1);
   const user = new User(msg.from.id, telegramBot);
 
   user.getDipartimento()
@@ -39,7 +46,8 @@ exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
       const timeString = moment(item.dateInizio).format('ddd DD, LT-') + moment(item.dateFine).format('LT');
       message += `\n\n<b>${timeString} (${item.aula})</b>:\n${item.denominazione} &#8212 <i>${item.docente}</i>`;
     });
-    if (count == 0) message = "Non ho trovato nulla :(";
+
+    if (count == 0) message = disappointedMessage;
     return message;
   }
 
