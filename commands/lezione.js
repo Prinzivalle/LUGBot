@@ -4,6 +4,7 @@ const moment = require('moment');
 const orariRoma3 = require('../modules/orari-roma3');
 const User = require('../modules/user-manager').User;
 const emoji = require('node-emoji');
+const errors = require('../lib/errors');
 
 const disappointedMessage = "Mi dispiace, non ho trovato nulla! " + emoji.get('disappointed');
 const helpMessage = "uso comando: /lezione &lt;query di ricerca&gt;";
@@ -18,7 +19,8 @@ exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
   user.getDipartimento()
     .then(queryEvents)
     .then(createMessage)
-    .then(sendMessage);
+    .then(sendMessage)
+    .catch(err => errors.handleGenericError(err, msg, telegramBot));
 
   function queryEvents(dipartimentoId) {
     return orariRoma3.getEventsFromName(dipartimentoId, query)
