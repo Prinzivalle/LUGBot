@@ -33,27 +33,29 @@ class Speaker {
    * @param questionName {string}
    * @param telegramId {number}
    * @param telegramBot {TelegramBot}
+   * @param data
    * @returns {Promise}
    */
-  ask(questionName, telegramId, telegramBot) {
+  ask(questionName, telegramId, telegramBot, ...data) {
     const that = this;
     if (typeof this.questionNames[questionName] === 'undefined') {
       throw new Error('Question not defined');
     }
     return new Promise(function (resolve, reject) {
       that.questionsPending[telegramId] = {
-            telegramId: telegramId,
-            questionName: questionName,
-            resolve: function (data) {
-              delete that.questionsPending[telegramId];
-              resolve(data)
-            },
-            reject: function (err) {
-              delete that.questionsPending[telegramId];
-              reject(err)
-            }
+        telegramId: telegramId,
+        questionName: questionName,
+        data: data,
+        resolve: function (data) {
+          delete that.questionsPending[telegramId];
+          resolve(data)
+        },
+        reject: function (err) {
+          delete that.questionsPending[telegramId];
+          reject(err)
+        }
       };
-      that.questionNames[questionName].askF(telegramId, telegramBot);
+      that.questionNames[questionName].askF(telegramId, telegramBot, ...data);
     });
   }
 
@@ -61,15 +63,15 @@ class Speaker {
     const question = this.questionsPending[msg.from.id];
     if (typeof question === 'undefined') return false;
     const questionName = question.questionName;
-    this.questionNames[questionName].responseF(msg, telegramBot).then(question.resolve).catch(question.reject);
+    this.questionNames[questionName].responseF(msg, telegramBot, ...question.data).then(question.resolve).catch(question.reject);
     return true;
   }
 }
 
 const speaker = new Speaker();
 speaker.Middleware = function (msg, telegramBot, next) {
-    if (!speaker.handleResponse(msg, telegramBot)) {
-        next();
-    }
+  if (!speaker.handleResponse(msg, telegramBot)) {
+    next();
+  }
 };
 module.exports = speaker;
