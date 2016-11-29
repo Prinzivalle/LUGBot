@@ -35,7 +35,7 @@ class CommandManager {
   handleMessage(msg, telegramBot) {
     let text = msg.text;
     if (text.charAt(0) == '/') {
-      text = text.split('@')[0].split(' ')[0];
+      text = text.split('@')[0].split(' ')[0].toLowerCase();
       const cb = this.commands[text];
       if (cb) return cb(msg, telegramBot);
     }

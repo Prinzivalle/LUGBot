@@ -253,7 +253,7 @@ function updateDipartimentoDb(dipartimento) {
   const todayDate = new Date();
 
   return new Promise(function (resolve, reject) {
-    fetchOrari(dipartimento, todayDate, new Date(todayDate.getTime() + (86400000 * 7))).then(function (object) {
+    fetchOrari(dipartimento, todayDate, new Date(todayDate.getTime() + (86400000 * 6))).then(function (object) {
       const facolta = object['facolta'];
       Promise.all([updateAule(facolta, dipartimento), updateOrari(facolta, dipartimento)])
         .then(resolve).catch(reject);
