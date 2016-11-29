@@ -28,14 +28,16 @@ class CommandManager {
   }
 
   /**
-   * Handle the msg. Please, do not use it elsewhere
+   * Handle the msg.
    * @param msg
-   * @param telegramBot An instance of Telegram
+   * @param telegramBot An instance of Telegram Bot
    */
   handleMessage(msg, telegramBot) {
-    const cb = this.commands[msg.text];
-    if (cb) {
-      return cb(msg, telegramBot);
+    let text = msg.text;
+    if (text.charAt(0) == '/') {
+      text = text.split('@')[0].split(' ')[0];
+      const cb = this.commands[text];
+      if (cb) return cb(msg, telegramBot);
     }
 
     const middleware = this.middlewares[0];
