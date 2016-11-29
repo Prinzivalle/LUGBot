@@ -26,7 +26,7 @@ exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
 
   function queryEventsFromQuery(dipartimentoId) {
     return orariRoma3.getEventsFromName(dipartimentoId, query)
-      .sort({score: {$meta: "textScore"}})
+      .sort({score: {$meta: "textScore"}, denominazione: 1, dateInizio: 1})
       .limit(12)
       .toArray()
       .then(data => {
