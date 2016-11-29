@@ -11,16 +11,13 @@ const startCommand = require('./start-help').startCommand;
 const helpCommand = require('./start-help').helpCommand;
 const auleLibereCommand = require('./aule-libere').auleLibereCommand;
 const postiLiberiCampusCommand = require('./ing-campus').postiLiberiCampusCommand;
+const lezioneCommand = require('./lezione').lezioneCommand;
 
 commands.on('/start', startCommand);
 commands.on('/help', helpCommand);
 commands.on('/aulelibere', auleLibereCommand);
 commands.on('/campus', postiLiberiCampusCommand);
-
-commands.on('/lezioni', (msg, telegramBot)=> {
-  telegramBot.sendMessage(msg.chat.id, 'Mi dispiace, ma gli scansafatiche del LUG Roma Tre ancora non mi hanno' +
-    ' insegnato come scrivere le lezioni odierne!')
-});
+commands.on('/lezione', lezioneCommand);
 
 commands.on('/dimenticami', (msg, telegramBot)=> {
   const user = new User(msg.from.id, telegramBot);

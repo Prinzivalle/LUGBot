@@ -43,6 +43,8 @@ module.exports = {
     collections.users = db.collection('users');
     collections.orari = db.collection('orari');
     collections.aule = db.collection('aule');
+
+    collections.orari.createIndex({denominazione: "text", docente: "text"})
   },
 
   /**

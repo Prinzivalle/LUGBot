@@ -90,6 +90,32 @@ class OrariRomaTre {
         });
     });
   }
+
+  /**
+   *
+   * @param dipartimentoId
+   * @param query
+   * @return {Cursor}
+   */
+  getEventsFromName(dipartimentoId, query) {
+    return orariCollections.find({
+      $text: {
+        $search: query,
+        $caseSensitive: false,
+        $diacriticSensitive: false
+      },
+      dipartimento: dipartimentoId
+    }, {
+      _id: 0,
+      denominazione: 1,
+      dipartimento: 1,
+      docente: 1,
+      aula: 1,
+      dateInizio: 1,
+      dateFine: 1,
+      score: {$meta: "textScore"}
+    });
+  }
 }
 
 /**
@@ -227,7 +253,7 @@ function updateDipartimentoDb(dipartimento) {
   const todayDate = new Date();
 
   return new Promise(function (resolve, reject) {
-    fetchOrari(dipartimento, todayDate, new Date(todayDate.getTime() + (86400000 * 2))).then(function (object) {
+    fetchOrari(dipartimento, todayDate, new Date(todayDate.getTime() + (86400000 * 7))).then(function (object) {
       const facolta = object['facolta'];
       Promise.all([updateAule(facolta, dipartimento), updateOrari(facolta, dipartimento)])
         .then(resolve).catch(reject);

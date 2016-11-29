@@ -59,7 +59,7 @@ function getAuleLibereMessage(auleLibere) {
   for (let aula of auleLibere) {
     message += `\n &#8226; <b>${aula.aula}</b> `;
     if (aula.date.getDate() == new Date().getDate()) {
-      message += `fino alle ${moment(aula.date).format('HH:mm')}`;
+      message += `fino alle ${moment(aula.date).format('LT')}`;
     }
     else {
       message += 'fino alla chiusura';
