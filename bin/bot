@@ -18,7 +18,16 @@ const database = require('../modules/database');
 
 database.connect()
   .then(database.loadCollections)
-  .then(()=>require('../app'))
+  .then(() => require('../app'))
   .catch(function (err) {
     console.error(err.stack);
   });
+
+process.on('SIGINT', function () {
+  database.db.close(false)
+    .then(() => process.exit(0))
+    .catch(e => {
+      console.error(e.stack);
+      process.exit(1)
+    });
+});
