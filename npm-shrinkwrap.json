@@ -79,6 +79,11 @@
       "from": "buffer-shims@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/buffer-shims/-/buffer-shims-1.0.0.tgz"
     },
+    "canvas": {
+      "version": "1.6.2",
+      "from": "canvas@latest",
+      "resolved": "https://registry.npmjs.org/canvas/-/canvas-1.6.2.tgz"
+    },
     "caseless": {
       "version": "0.11.0",
       "from": "caseless@>=0.11.0 <0.12.0"
@@ -157,7 +162,7 @@
     },
     "escape-string-regexp": {
       "version": "1.0.5",
-      "from": "escape-string-regexp@>=1.0.2 <2.0.0",
+      "from": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz",
       "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
     },
     "eventemitter3": {
@@ -345,6 +350,11 @@
       "version": "0.7.2",
       "from": "ms@0.7.2",
       "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz"
+    },
+    "nan": {
+      "version": "2.4.0",
+      "from": "nan@>=2.4.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.4.0.tgz"
     },
     "node-emoji": {
       "version": "1.4.1",

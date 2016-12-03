@@ -3,97 +3,12 @@
 const http = require("http");
 const errors = require('../lib/errors');
 const moment = require('moment');
+const CampusCondition = require('../modules/ing-campus/campus-condition');
+const MapSettings = require('../etc/ing-campus-maps');
 
+const campusCondition = new CampusCondition('/campus/statoCampus.txt', MapSettings.campusMatrix, 1);
+const arataCondition = new CampusCondition('/campus/statoArata.txt', MapSettings.arataMatrix, 2);
 
-class CampusConditionParser {
-
-  constructor() {
-    this.free = 0;
-    this.busy = 0;
-    this.data = "";
-    this.lastUpdatedDate = null;
-  }
-
-  /**
-   * Parse data chunk from the http response
-   * @param {string} chunk
-   * @return {boolean} isFinished
-   */
-  parse(chunk) {
-    this.data += chunk;
-  }
-
-  end() {
-    const data = this.data.toString().split('\n');
-    const seatsData = data[0];
-    this.lastUpdatedDate = new Date(data[1]);
-    for (let i = 0; i < seatsData.length; i++) {
-      const c = seatsData[i];
-      if (c == '0') this.free++;
-      else if (c == '1') this.busy++;
-    }
-  }
-}
-
-
-class CampusCondition {
-
-  constructor(urlPath) {
-    this.free = 0;
-    this.busy = 0;
-    this.lastUpdatedDate = null;
-    this.requestDate = 0;
-    this.urlPath = urlPath;
-  }
-
-  get total() {
-    return this.free + this.busy;
-  }
-
-  /**
-   *
-   * @return {Promise.<CampusCondition>}
-   */
-  getCondition() {
-    if ((Date.now() - this.requestDate) < 60000) {
-      return Promise.resolve(this);
-    }
-    return this.update().then(() => this);
-  }
-
-  /**
-   * @private
-   * @return {Promise}
-   */
-  update() {
-    return new Promise(function (resolve, reject) {
-      const req = http.request({
-        hostname: 'muglab.uniroma3.it',
-        path: this.urlPath
-      }, (res) => {
-        const parser = new CampusConditionParser();
-        res.on('data', parser.parse.bind(parser));
-        res.on('end', () => {
-          parser.end();
-          this.free = parser.free;
-          this.busy = parser.busy;
-          this.lastUpdatedDate = parser.lastUpdatedDate;
-          this.requestDate = Date.now();
-          resolve();
-        });
-      });
-
-      req.on('error', reject);
-
-      req.end();
-    }.bind(this));
-  }
-
-}
-
-
-const campusCondition = new CampusCondition('/campus/statoCampus.txt');
-const arataCondition = new CampusCondition('/campus/statoArata.txt');
 exports.postiLiberiCampusCommand = function postiLiberiCampusCommand(msg, telegramBot) {
 
   arataCondition.getCondition()
@@ -111,3 +26,32 @@ exports.postiLiberiCampusCommand = function postiLiberiCampusCommand(msg, telegr
       errors.handleGenericError(e, msg, telegramBot);
     });
 };
+
+exports.mappaCampusCommand = function mappaCampusCommand(conditionString) {
+  const condition = {
+    'campus': campusCondition,
+    'arata': arataCondition,
+  }[conditionString];
+
+  return function (msg, telegramBot) {
+    let statusString;
+    let shouldISave;
+
+    condition.getCondition()
+      .then(() => {
+        statusString = condition.statusString;
+        return condition.getTelegramPhoto(statusString)
+      })
+      .then(data => {
+        shouldISave = typeof data != 'string';
+        return telegramBot.sendPhoto(msg.chat.id, data);
+      })
+      .then(msg => {
+        if (shouldISave) condition.saveTelegramPhoto(statusString, msg.photo[0].file_id);
+      })
+      .catch(e => {
+        errors.handleGenericError(e, msg, telegramBot);
+      });
+  };
+};
+

@@ -42,9 +42,10 @@ module.exports = {
     collections.conversations = db.collection('conversations');
     collections.users = db.collection('users');
     collections.orari = db.collection('orari');
+    collections.orari.createIndex({denominazione: "text", docente: "text"});
     collections.aule = db.collection('aule');
-
-    collections.orari.createIndex({denominazione: "text", docente: "text"})
+    collections.ingCampusCache = db.collection('ingCampusCache');
+    collections.ingCampusCache.createIndex({mapId: 1});
   },
 
   /**

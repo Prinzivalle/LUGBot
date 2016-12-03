@@ -8,6 +8,7 @@
   "main": "bin/bot",
   "dependencies": {
     "brain": "^0.7.0",
+    "canvas": "^1.6.2",
     "co": "^4.6.0",
     "debug": "https://registry.npmjs.org/debug/-/debug-2.3.3.tgz",
     "moment": "^2.10.6",
