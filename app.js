@@ -14,3 +14,6 @@ commandManager.use(function (msg, telegramBot) {
 });
 
 telegramBot.attachCommandManager(commandManager);
+
+// PM2 graceful start
+if (process.send) process.send('ready');
