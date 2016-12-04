@@ -18,20 +18,14 @@ class OrariRomaTre {
    * @return {Promise}
    */
   updateDb() {
-    return new Promise(function (resolve, reject) {
-      const promises = [];
-      Object.keys(dipartimenti).forEach(function (key) {
-        const dipartimento = dipartimenti[key];
-        if (typeof dipartimento.orariKey !== 'undefined')
-          promises.push(updateDipartimentoDb(dipartimento));
-      });
-      Promise.all(promises).then(function (values) {
-        debug('Database updated');
-        resolve(values);
-      }).catch(function (err) {
-        debug(err);
-        reject(err);
-      });
+    const promises = [];
+    for (const key of Object.keys(dipartimenti)) {
+      const dipartimento = dipartimenti[key];
+      if (dipartimento.orariKey) promises.push(updateDipartimentoDb(dipartimento));
+    }
+    return Promise.all(promises).then(values => {
+      debug('Database updated');
+      return values;
     });
   }
 
@@ -48,11 +42,12 @@ class OrariRomaTre {
    * @return {Promise.<AulaLibera[]>}
    */
   getAuleLibere(dipartimento) {
-    const todayDate = new Date();
+    const nowDate = new Date();
     const fromDate = new Date();
     const toDate = new Date();
     fromDate.setHours(0, 0, 0, 0);
     toDate.setHours(24, 0, 0, 0);
+
     return new Promise(function (resolve, reject) {
       const auleObj = {};
       const auleArr = [];
@@ -66,15 +61,15 @@ class OrariRomaTre {
         dateFine: 1
       }).forEach(
         function (item) {
-          if (item.dateInizio < todayDate && todayDate < item.dateFine) {
+          if (item.dateInizio < nowDate && nowDate < item.dateFine) {
             // Aula occupata
             auleObj[item.aula] = -1;
           }
           else if (typeof auleObj[item.aula] === 'undefined') {
-            if (item.dateInizio < todayDate) auleObj[item.aula] = toDate;
+            if (item.dateInizio < nowDate) auleObj[item.aula] = toDate;
             else auleObj[item.aula] = item.dateInizio;
           }
-          else if (item.dateInizio < auleObj[item.aula] && item.dateInizio > todayDate && auleObj[item.aula] !== -1) {
+          else if (item.dateInizio < auleObj[item.aula] && item.dateInizio > nowDate && auleObj[item.aula] !== -1) {
             auleObj[item.aula] = item.dateInizio;
           }
         },
@@ -83,9 +78,7 @@ class OrariRomaTre {
           for (let aula in auleObj) {
             if (auleObj[aula] != -1) auleArr.push({aula: aula, date: auleObj[aula]});
           }
-          auleArr.sort(function (item1, item2) {
-            return item2.date.getTime() - item1.date.getTime();
-          });
+          auleArr.sort((a, b) => b.date.getTime() - a.date.getTime());
           return resolve(auleArr);
         });
     });
@@ -251,14 +244,13 @@ function updateAule(facolta, dipartimento) {
  */
 function updateDipartimentoDb(dipartimento) {
   const todayDate = new Date();
+  const toDate = new Date(todayDate.getTime() + (86400000 * 6));
 
-  return new Promise(function (resolve, reject) {
-    fetchOrari(dipartimento, todayDate, new Date(todayDate.getTime() + (86400000 * 6))).then(function (object) {
+  return fetchOrari(dipartimento, todayDate, toDate)
+    .then(object => {
       const facolta = object['facolta'];
-      Promise.all([updateAule(facolta, dipartimento), updateOrari(facolta, dipartimento)])
-        .then(resolve).catch(reject);
-    }).catch(reject);
-  });
+      return Promise.all([updateAule(facolta, dipartimento), updateOrari(facolta, dipartimento)]);
+    })
 }
 
 module.exports = new OrariRomaTre();

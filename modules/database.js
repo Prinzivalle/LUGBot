@@ -35,7 +35,7 @@ module.exports = {
   },
 
   /**
-   *
+   * Load all collections used syncronously
    * @param {Db} db
    */
   loadCollections: function (db) {
@@ -46,27 +46,6 @@ module.exports = {
     collections.aule = db.collection('aule');
     collections.ingCampusCache = db.collection('ingCampusCache');
     collections.ingCampusCache.createIndex({mapId: 1});
-  },
-
-  /**
-   * Foreach news insert if not exists else update if necessary
-   * @param {Array} news
-   * @returns {Promise}
-   */
-  updateNews: function (news) {
-    return new Promise(function (resolve, reject) {
-      const collection = db.collection('news');
-      const promises = [];
-      news.forEach(function (element) {
-        promises.push(collection.updateOne({titolo: element.titolo}, element, {upsert: true}));
-      });
-      Promise.all(promises).then(function (values) {
-        console.log('[NEWS] Database updated');
-        resolve(values);
-      }).catch(function (error) {
-        reject(error);
-      });
-    });
-
   }
+
 };
