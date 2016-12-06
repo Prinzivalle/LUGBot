@@ -23,7 +23,11 @@ const commandsAlwaysAvailable = ['settings', 'info', 'help'];
 exports.startCommand = function startCommand(msg, telegramBot) {
   const user = new User(msg.from.id, telegramBot);
   user.getDipartimento().then(getHelpMessage).then(function (helpMessage) {
-    telegramBot.sendMessage(msg.chat.id, `Ciao ${msg.from.first_name}! ${helpMessage}`);
+    telegramBot.sendMessage(
+      msg.chat.id,
+      `Ciao ${msg.from.first_name}! ${helpMessage}`,
+      {reply_markup: JSON.stringify({remove_keyboard: true})}
+    );
   });
 };
 
@@ -35,7 +39,7 @@ exports.startCommand = function startCommand(msg, telegramBot) {
 exports.helpCommand = function startCommand(msg, telegramBot) {
   const user = new User(msg.from.id, telegramBot);
   user.getDipartimento().then(getHelpMessage).then(function (helpMessage) {
-    telegramBot.sendMessage(msg.chat.id, helpMessage);
+    telegramBot.sendMessage(msg.chat.id, helpMessage, {reply_markup: JSON.stringify({remove_keyboard: true})});
   });
 };
 
