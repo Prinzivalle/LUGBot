@@ -13,6 +13,7 @@ const auleLibereCommand = require('./aule-libere').auleLibereCommand;
 const postiLiberiCampusCommand = require('./ing-campus').postiLiberiCampusCommand;
 const mappaCampusCommand = require('./ing-campus').mappaCampusCommand;
 const lezioneCommand = require('./lezione').lezioneCommand;
+const settingsCommand = require('./settings').settingsCommand;
 
 commands.on('/start', startCommand);
 commands.on('/help', helpCommand);
@@ -21,6 +22,7 @@ commands.on('/campus', postiLiberiCampusCommand);
 commands.on('/mappacampus', mappaCampusCommand('campus'));
 commands.on('/mappaarata', mappaCampusCommand('arata'));
 commands.on('/lezione', lezioneCommand);
+commands.on('/settings', settingsCommand);
 
 commands.on('/dimenticami', (msg, telegramBot)=> {
   const user = new User(msg.from.id, telegramBot);
@@ -44,10 +46,6 @@ commands.on('/info', (msg, telegramBot)=> {
 commands.on('/grazie', (msg, telegramBot)=> {
   telegramBot.sendMessage(msg.chat.id, 'Prego!')
 });
-
-// TODO Access this command only in debug mode
-//commands.on('/debug', function (msg, telegramBot) {
-//});
 
 commands.on('/default', (msg, telegramBot)=> {
   let message = '';

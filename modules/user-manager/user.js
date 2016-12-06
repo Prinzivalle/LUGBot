@@ -31,6 +31,10 @@ class User {
     }.bind(this));
   }
 
+  setDipartimento(dipartimentoId) {
+    return this.update({dipartimentoId: dipartimentoId});
+  }
+
   update(update) {
     return usersCollection.updateOne({telegramId: this.telegramId}, {$set: update});
   }
