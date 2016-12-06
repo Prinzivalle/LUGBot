@@ -31,8 +31,16 @@ class User {
     }.bind(this));
   }
 
+  /**
+   * @param {number} dipartimentoId
+   * @return {Promise}
+   */
   setDipartimento(dipartimentoId) {
-    return this.update({dipartimentoId: dipartimentoId});
+    return co(function*() {
+      yield this.getUser();
+      yield this.update({dipartimentoId: parseInt(dipartimentoId)});
+      return dipartimentoId;
+    }.bind(this));
   }
 
   update(update) {

@@ -12,7 +12,7 @@ const helpCommand = require('./start-help').helpCommand;
 const auleLibereCommand = require('./aule-libere').auleLibereCommand;
 const postiLiberiCampusCommand = require('./ing-campus').postiLiberiCampusCommand;
 const mappaCampusCommand = require('./ing-campus').mappaCampusCommand;
-const lezioneCommand = require('./lezione').lezioneCommand;
+const orariCorsoCommand = require('./orari-corso').orariCorsoCommand;
 const settingsCommand = require('./settings').settingsCommand;
 
 commands.on('/start', startCommand);
@@ -21,7 +21,8 @@ commands.on('/aulelibere', auleLibereCommand);
 commands.on('/campus', postiLiberiCampusCommand);
 commands.on('/mappacampus', mappaCampusCommand('campus'));
 commands.on('/mappaarata', mappaCampusCommand('arata'));
-commands.on('/lezione', lezioneCommand);
+commands.on('/lezione', orariCorsoCommand);
+commands.on('/oraricorso', orariCorsoCommand);
 commands.on('/settings', settingsCommand);
 
 commands.on('/dimenticami', (msg, telegramBot)=> {

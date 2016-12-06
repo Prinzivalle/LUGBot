@@ -7,12 +7,13 @@ const dipartimenti = require('../modules/dipartimenti');
 const disappointedMessage = `Purtroppo non riesco ad aiutarti in nessun modo se sei in questo dipartimento. ${emoji.get('disappointed')}`;
 const commandsHelps = {
   'aulelibere': 'Mostra le aule libere adesso',
-  'campus': 'Controlla se ci sono posti liberi nei laboratori informatici',
-  'dimenticami': 'Elimina le tue preferenze',
+  'oraricorso': 'Cerca gli orari di un corso',
+  'laboratori': 'Controlla se ci sono posti liberi nei laboratori',
+  'settings': 'Modifica le tue impostazioni personali',
   'help': 'Mostra la lista dei comandi disponibili',
   'info': 'Chi ha reso questo bot possibile',
 };
-const commandsAlwaysAvailable = ['dimenticami', 'info', 'help'];
+const commandsAlwaysAvailable = ['settings', 'info', 'help'];
 
 /**
  *

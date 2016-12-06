@@ -6,25 +6,44 @@ const User = require('../modules/user-manager').User;
 const emoji = require('node-emoji');
 const errors = require('../lib/errors');
 const speaker = require('../modules/speaker');
+const co = require('co');
 
 const disappointedMessage = "Mi dispiace, non ho trovato nulla! " + emoji.get('disappointed');
-const helpMessage = "uso comando: /lezione &lt;query di ricerca&gt;";
 
-exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
-  const spaceIndex = msg.text.indexOf(' ');
-  if (spaceIndex == -1) return sendMessage(helpMessage);
+exports.orariCorsoCommand = function lezioneCommand(msg, telegramBot) {
 
-  const query = msg.text.substr(spaceIndex + 1).replace('-', ' ');
-  const user = new User(msg.from.id, telegramBot);
+  co(function*() {
+    const user = new User(msg.from.id, telegramBot);
+    const query = yield getQuery();
+    const dipartimentoId = yield user.getDipartimento();
+    const data = yield queryEventsFromQuery(dipartimentoId, query);
+    const data2 = yield queryEventsFromName(data);
+    const message = createMessage(data2);
+    sendMessage(message);
+  }.bind(this)).catch(err => errors.handleGenericError(err, msg, telegramBot));
 
-  user.getDipartimento()
-    .then(queryEventsFromQuery)
-    .then(queryEventsFromName)
-    .then(createMessage)
-    .then(sendMessage)
-    .catch(err => errors.handleGenericError(err, msg, telegramBot));
+  /**
+   *
+   * @return {Promise.<string>}
+   */
+  function getQuery() {
+    const spaceIndex = msg.text.indexOf(' ');
+    if (spaceIndex == -1) {
+      return speaker.ask('oraricorso-query', msg.from.id, telegramBot)
+        .then(msg => {
+          return msg.text.replace('-', ' ');
+        });
+    }
+    return Promise.resolve(msg.text.substr(spaceIndex + 1).replace('-', ' '));
+  }
 
-  function queryEventsFromQuery(dipartimentoId) {
+  /**
+   *
+   * @param dipartimentoId
+   * @param query
+   * @return {Promise.<Cursor>}
+   */
+  function queryEventsFromQuery(dipartimentoId, query) {
     return orariRoma3.getEventsFromName(dipartimentoId, query)
       .sort({score: {$meta: "textScore"}, denominazione: 1, dateInizio: 1})
       .limit(12)
@@ -41,8 +60,13 @@ exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
       });
   }
 
+  /**
+   *
+   * @param data
+   * @return {Promise}
+   */
   function queryEventsFromName(data) {
-    if (data.length == 0) return null;
+    if (data.length == 0) return Promise.resolve(null);
 
     let denominazione = null;
     let docente = null;
@@ -55,14 +79,14 @@ exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
       }
     });
     if (events.length == 1) {
-      return {
+      return Promise.resolve({
         denominazione: events[0].denominazione,
         docente: events[0].docente,
         dates: data
-      };
+      });
     }
 
-    return speaker.ask('lezione-selection', msg.from.id, telegramBot, events)
+    return speaker.ask('oraricorso-selection', msg.from.id, telegramBot, events)
       .then(msg => {
         const split = msg.text.split(' \u2014 ');
         const denominazione = split[0];
@@ -72,6 +96,11 @@ exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
       });
   }
 
+  /**
+   *
+   * @param data
+   * @return {string}
+   */
   function createMessage(data) {
     if (!data) return disappointedMessage;
 
@@ -83,17 +112,32 @@ exports.lezioneCommand = function lezioneCommand(msg, telegramBot) {
     return message;
   }
 
+  /**
+   *
+   * @param message
+   * @return {Promise}
+   */
   function sendMessage(message) {
     const sendMessageOptions = {
       reply_markup: JSON.stringify({remove_keyboard: true}),
       parse_mode: 'HTML'
     };
-    telegramBot.sendMessage(msg.chat.id, message, sendMessageOptions);
+    return telegramBot.sendMessage(msg.chat.id, message, sendMessageOptions);
   }
 
 };
 
-function askF(telegramId, telegramBot, events) {
+function askQuery(telegramId, telegramBot, events) {
+  telegramBot.sendMessage(telegramId, "Di quale corso vuoi sapere gli orari?", {
+    reply_markup: JSON.stringify({remove_keyboard: true}),
+  });
+}
+
+function responseQuery(msg, telegramBot, events) {
+  return Promise.resolve(msg);
+}
+
+function askSelection(telegramId, telegramBot, events) {
   const keyboard = [];
   for (let event of events) {
     keyboard.push([event.denominazione + " \u2014 " + event.docente]);
@@ -107,9 +151,9 @@ function askF(telegramId, telegramBot, events) {
   });
 }
 
-function responseF(msg, telegramBot, events) {
-  // if (events.indexOf(msg.text) == -1) return Promise.reject(new errors.InputValidationError(disappointedMessage));
+function responseSelection(msg, telegramBot, events) {
   return Promise.resolve(msg);
 }
 
-speaker.addQuestion('lezione-selection', askF, responseF);
+speaker.addQuestion('oraricorso-query', askQuery, responseQuery);
+speaker.addQuestion('oraricorso-selection', askSelection, responseSelection);
