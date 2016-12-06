@@ -18,6 +18,7 @@ const settingsCommand = require('./settings').settingsCommand;
 commands.on('/start', startCommand);
 commands.on('/help', helpCommand);
 commands.on('/aulelibere', auleLibereCommand);
+commands.on('/laboratori', postiLiberiCampusCommand);
 commands.on('/campus', postiLiberiCampusCommand);
 commands.on('/mappacampus', mappaCampusCommand('campus'));
 commands.on('/mappaarata', mappaCampusCommand('arata'));
@@ -40,7 +41,7 @@ commands.on('/cometichiami', (msg, telegramBot)=> {
 
 commands.on('/info', (msg, telegramBot)=> {
   telegramBot.sendMessage(msg.chat.id,
-    'Questo bot è un progetto del <a href="https://www.facebook.com/LUGRoma3/">LUG Roma Tre</a>.\n\n<b>AUTORI</b>\n&#8226; Christian Micocci\n&#8226; Lorenzo Pizzari\n\n<b>RINGRAZIAMENTI</b>\nI dati in tempo reale sull\'<i>Aula Campus</i> (Ingegneria) sono forniti dall\'applicativo ospitato dal <a href="http://muglab.uniroma3.it/">MUG Roma Tre</a> e creato da:\n&#8226; Lorenzo Ariemma\n&#8226; Gaetano Bonofiglio.\n\n<b>LICENZA</b>\nQuesto bot è coperto da licenza <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPLv2</a>.\nPuoi trovare il codice sorgente su <a href="https://github.com/LUGRomaTre/LUGBot">GitHub</a>.',
+    'Questo bot è un progetto del <a href="https://www.facebook.com/LUGRoma3/">LUG Roma Tre</a>.\n\n<b>AUTORI</b>\n&#8226; Christian Micocci\n&#8226; Lorenzo Pizzari\n\n<b>RINGRAZIAMENTI</b>\nI dati in tempo reale sull\'<i>Aula Campus</i> (Ingegneria) sono forniti dall\'applicativo ospitato dal <a href="http://muglab.uniroma3.it/">MUG Roma Tre</a> e creato da:\n&#8226; Lorenzo Ariemma\n&#8226; Gaetano Bonofiglio\n\n<b>LICENZA</b>\nQuesto bot è coperto da licenza <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPLv2</a>.\nPuoi trovare il codice sorgente su <a href="https://github.com/LUGRomaTre/LUGBot">GitHub</a>.',
     {parse_mode: 'HTML'})
 });
 
