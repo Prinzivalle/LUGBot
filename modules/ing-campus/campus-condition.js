@@ -78,11 +78,20 @@ module.exports = class CampusCondition {
         res.on('data', parser.parse.bind(parser));
         res.on('end', () => {
           parser.end();
-          this.free = parser.free;
-          this.busy = parser.busy;
           this.lastUpdatedDate = parser.lastUpdatedDate;
           this.statusString = parser.statusString;
           this.requestDate = Date.now();
+
+          const statusString = this.statusString;
+          const map = [].concat.apply([], this.mapMatrix).filter(a => a !== 0 && a !== 'c');
+          for (let i = 0; i < statusString.length; i++) {
+            if (typeof map[i] != 'number') continue;
+
+            const c = statusString[i];
+            if (c == '0') this.free++;
+            else if (c == '1') this.busy++;
+          }
+
           resolve();
         });
       });

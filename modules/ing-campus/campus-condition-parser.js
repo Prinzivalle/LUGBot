@@ -7,14 +7,9 @@
 module.exports = class CampusConditionParser {
 
   constructor() {
-    this.free = 0;
-    this.busy = 0;
     this.data = "";
+    this.statusString = null;
     this.lastUpdatedDate = null;
-  }
-
-  get statusString() {
-    return this.data.substr(0, this.data.indexOf('\n'))
   }
 
   /**
@@ -28,12 +23,7 @@ module.exports = class CampusConditionParser {
 
   end() {
     const data = this.data.toString().split('\n');
-    const seatsData = data[0];
+    this.statusString = data[0];
     this.lastUpdatedDate = new Date(data[1]);
-    for (let i = 0; i < seatsData.length; i++) {
-      const c = seatsData[i];
-      if (c == '0') this.free++;
-      else if (c == '1') this.busy++;
-    }
   }
 };
