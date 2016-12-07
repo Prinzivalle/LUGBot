@@ -84,6 +84,8 @@ module.exports = class CampusCondition {
 
           const statusString = this.statusString;
           const map = [].concat.apply([], this.mapMatrix).filter(a => a !== 0 && a !== 'c');
+          this.free = 0;
+          this.busy = 0;
           for (let i = 0; i < statusString.length; i++) {
             if (typeof map[i] != 'number') continue;
 
