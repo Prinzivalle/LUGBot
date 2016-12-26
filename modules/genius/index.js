@@ -20,6 +20,9 @@ module.exports = {
   Middleware: function Middleware(msg, telegramBot, next) {
     client.message(msg.text, {})
       .then((data) => {
+        // Errors check
+        if (!(data && data.entities && data.entities['intent'] && data.entities['intent'][0])) return next();
+
         const intent = data.entities['intent'][0];
         if (intent['confidence'] < 0.5) return next();
         return commands.commands['/' + intent['value']](msg, telegramBot, data.entities);
