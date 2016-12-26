@@ -26,7 +26,7 @@ class OrariRomaTre {
     return Promise.all(promises).then(values => {
       debug('Database updated');
       return values;
-    });
+    }).catch(e => console.error(e.stack));
   }
 
   /**
