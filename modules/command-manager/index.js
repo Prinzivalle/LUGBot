@@ -37,7 +37,13 @@ class CommandManager {
     if (text.charAt(0) == '/') {
       text = text.split('@')[0].split(' ')[0].toLowerCase();
       const cb = this.commands[text];
-      if (cb) return cb(msg, telegramBot);
+
+      // Get argument
+      const spaceIndex = msg.text.indexOf(' ');
+      let arg = undefined;
+      if (spaceIndex != -1) arg = msg.text.substr(spaceIndex + 1);
+
+      if (cb) return cb(msg, telegramBot, arg);
     }
 
     const middleware = this.middlewares[0];

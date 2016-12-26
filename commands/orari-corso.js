@@ -10,7 +10,7 @@ const co = require('co');
 
 const disappointedMessage = "Mi dispiace, non ho trovato nulla! " + emoji.get('disappointed');
 
-exports.orariCorsoCommand = function lezioneCommand(msg, telegramBot) {
+exports.orariCorsoCommand = function lezioneCommand(msg, telegramBot, arg) {
 
   co(function*() {
     const user = new User(msg.from.id, telegramBot);
@@ -27,14 +27,16 @@ exports.orariCorsoCommand = function lezioneCommand(msg, telegramBot) {
    * @return {Promise.<string>}
    */
   function getQuery() {
-    const spaceIndex = msg.text.indexOf(' ');
-    if (spaceIndex == -1) {
+    if (!arg) {
       return speaker.ask('oraricorso-query', msg.from.id, telegramBot)
         .then(msg => {
           return msg.text.replace('-', ' ');
         });
+    } else if (typeof arg == 'string') {
+      return Promise.resolve(arg.replace('-', ' '));
+    } else if (typeof arg == 'object' && arg.corso && arg.corso[0]) {
+      return Promise.resolve(arg.corso[0].value);
     }
-    return Promise.resolve(msg.text.substr(spaceIndex + 1).replace('-', ' '));
   }
 
   /**

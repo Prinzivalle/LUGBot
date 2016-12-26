@@ -1,55 +1,19 @@
 'use strict';
 
 const debug = require('debug')('bot:genius');
-const brain = require('brain');
-const phrases = require('./sentences.json');
 const commands = require('../command-manager');
+const {Wit, log} = require('node-wit');
 
-const net = new brain.NeuralNetwork();
-
-function makeDict(str) {
-  const ar = str.split(' ');
-  const oj = {};
-  ar.forEach(function (item) {
-    oj[item] = 1;
-  });
-  return oj;
-}
-
-function normalizeSentence(sentence) {
-  return sentence.toLowerCase().replace(/[^a-z ]/g, "");
-}
-
-function init() {
-  const data = [];
-
-  const keys = Object.keys(phrases);
-  keys.forEach(function (key) {
-    const list = phrases[key];
-    list.forEach(function (p) {
-      const a = {
-        input: makeDict(p),
-        output: {}
-      };
-      a.output[key] = 1;
-      data.push(a)
-    });
-  });
-
-  net.train(data);
-}
-
-init();
+const client = new Wit({accessToken: '4BRA2XGYZHRFJGDM4MFPP56X3VC3QRPX'});
 
 module.exports = {
   Middleware: function Middleware(msg, telegramBot, next) {
-    const stats = net.run(makeDict(normalizeSentence(msg.text)));
-    for (let command in stats) {
-      if (stats.hasOwnProperty(command) && stats[command] > 0.5) {
-        return commands.commands['/' + command](msg, telegramBot, next);
-      }
-    }
-    debug(stats);
-    return next();
+    client.message(msg.text, {})
+      .then((data) => {
+        const intent = data.entities['intent'][0];
+        if (intent['confidence'] < 0.5) return next();
+        return commands.commands['/' + intent['value']](msg, telegramBot, data.entities);
+      })
+      .catch(console.error);
   }
 };
