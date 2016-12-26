@@ -3,8 +3,18 @@
 const debug = require('debug')('bot:genius');
 const commands = require('../command-manager');
 const {Wit, log} = require('node-wit');
+const accessToken = require('../../etc/config').witAiToken;
 
-const client = new Wit({accessToken: '4BRA2XGYZHRFJGDM4MFPP56X3VC3QRPX'});
+if (!accessToken) {
+  module.exports = {
+    Middleware: function Middleware(msg, telegramBot, next) {
+      return next();
+    }
+  };
+  return;
+}
+
+const client = new Wit({accessToken: accessToken});
 
 module.exports = {
   Middleware: function Middleware(msg, telegramBot, next) {

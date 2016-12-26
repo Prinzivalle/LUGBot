@@ -51,3 +51,10 @@ exports.webHook = {
  * @type {boolean|object}
  */
 exports.polling = false;
+
+/**
+ * Token of wit.ai API.
+ * If empty disable wit integration.
+ * @type {string}
+ */
+exports.witAiToken = '';
