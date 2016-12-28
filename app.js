@@ -14,6 +14,9 @@ commandManager.use(function (msg, telegramBot) {
 });
 
 telegramBot.attachCommandManager(commandManager);
+telegramBot.on('voice', function (msg) {
+  genius.VoiceHandler(msg, this, commandManager.commands['/default']);
+});
 
 // PM2 graceful start
 if (process.send) process.send('ready');

@@ -12,15 +12,15 @@ const disappointedMessage = "Mi dispiace, non ho trovato nulla! " + emoji.get('d
 
 exports.orariCorsoCommand = function lezioneCommand(msg, telegramBot, arg) {
 
-  co(function*() {
+  (async function () {
     const user = new User(msg.from.id, telegramBot);
-    const query = yield getQuery();
-    const dipartimentoId = yield user.getDipartimento();
-    const data = yield queryEventsFromQuery(dipartimentoId, query);
-    const data2 = yield queryEventsFromName(data);
+    const query = await getQuery();
+    const dipartimentoId = await user.getDipartimento();
+    const data = await queryEventsFromQuery(dipartimentoId, query);
+    const data2 = await queryEventsFromName(data);
     const message = createMessage(data2);
     sendMessage(message);
-  }.bind(this)).catch(err => errors.handleGenericError(err, msg, telegramBot));
+  }.bind(this))().catch(err => errors.handleGenericError(err, msg, telegramBot));
 
   /**
    *
@@ -28,15 +28,15 @@ exports.orariCorsoCommand = function lezioneCommand(msg, telegramBot, arg) {
    */
   function getQuery() {
     if (!arg) {
-      return speaker.ask('oraricorso-query', msg.from.id, telegramBot)
-        .then(msg => {
-          return msg.text.replace('-', ' ');
-        });
     } else if (typeof arg == 'string') {
       return Promise.resolve(arg.replace('-', ' '));
     } else if (typeof arg == 'object' && arg.corso && arg.corso[0]) {
       return Promise.resolve(arg.corso[0].value);
     }
+    return speaker.ask('oraricorso-query', msg.from.id, telegramBot)
+      .then(msg => {
+        return msg.text.replace('-', ' ');
+      });
   }
 
   /**

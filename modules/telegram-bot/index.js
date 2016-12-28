@@ -8,7 +8,7 @@ const TelegramBot = require('node-telegram-bot-api');
 class MyTelegramBot extends TelegramBot {
 
   attachCommandManager(commandManager) {
-    this.on('message', function (msg) {
+    this.on('text', function (msg) {
       logger.log(msg.chat.id, msg.text, false); // Log message
       commandManager.handleMessage(msg, telegramBot)
     });
