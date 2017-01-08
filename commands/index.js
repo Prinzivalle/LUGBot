@@ -35,6 +35,10 @@ commands.on('/dimenticami', (msg, telegramBot)=> {
   });
 });
 
+commands.on('/isalive', (msg, telegramBot) => {
+  telegramBot.sendMessage(msg.chat.id, "I'm alive");
+});
+
 commands.on('/cometichiami', (msg, telegramBot)=> {
   telegramBot.sendMessage(msg.chat.id, 'Mi chiamo LUG Roma Tre Bot!')
 });
