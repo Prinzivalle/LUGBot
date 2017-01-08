@@ -23,7 +23,11 @@ exports.postiLiberiCampusCommand = function postiLiberiCampusCommand(msg, telegr
       );
     })
     .catch(e => {
-      errors.handleGenericError(e, msg, telegramBot);
+      if (e.code == 'EHOSTUNREACH') {
+        telegramBot.sendMessage(msg.chat.id, 'Mi dispiace, non riesco a contattare il server che mantiene i dati del laboratorio. Riprova più tardi.');
+      } else {
+        errors.handleGenericError(e, msg, telegramBot);
+      }
     });
 };
 
