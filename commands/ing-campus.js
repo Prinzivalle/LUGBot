@@ -18,7 +18,8 @@ exports.postiLiberiCampusCommand = function postiLiberiCampusCommand(msg, telegr
         `Posti liberi Aula Campus: <b>${campusCondition.free}</b>/${campusCondition.total},` +
         `\n<i>aggiornato ${moment(campusCondition.lastUpdatedDate).fromNow()}</i>.` +
         `\n\nPosti liberi Aula Arata: <b>${arataCondition.free}</b>/${arataCondition.total},` +
-        `\n<i>aggiornato ${moment(arataCondition.lastUpdatedDate).fromNow()}</i>.`,
+        `\n<i>aggiornato ${moment(arataCondition.lastUpdatedDate).fromNow()}</i>.` +
+        `\n\n<i>Per ulteriore dettagli invia</i> \n/mappacampus <i>o</i> /mappaarata.`,
         {parse_mode: 'HTML'}
       );
     })
