@@ -41,7 +41,7 @@ class OrariRomaTre {
    * @params {object} dipartimento
    * @return {Promise.<AulaLibera[]>}
    */
-  getAuleLibere(dipartimento) {
+  getFreeRooms(dipartimento) {
     const nowDate = new Date();
     const fromDate = new Date();
     const toDate = new Date();

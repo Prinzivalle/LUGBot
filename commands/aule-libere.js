@@ -41,7 +41,7 @@ exports.auleLibereCommand = function auleLibereCommand(msg, telegramBot) {
  * @return {Promise.<AulaLibera[]>}
  */
 function getAuleLibereFromDipartimentoId(dipartimentoId) {
-  return orari.getAuleLibere(dipartimenti[dipartimentoId]);
+  return orari.getFreeRooms(dipartimenti[dipartimentoId]);
 }
 
 /**
