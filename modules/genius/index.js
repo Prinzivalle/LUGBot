@@ -37,8 +37,11 @@ module.exports = {
 function runCommand(data, msg, telegramBot, next) {
   // Errors check
   if (!(data && data.entities && data.entities['intent'] && data.entities['intent'][0])) return next();
-
   const intent = data.entities['intent'][0];
   if (intent['confidence'] < 0.5) return next();
-  return commands.commands['/' + intent['value']](msg, telegramBot, data.entities);
+  const command = commands.commands['/' + intent['value']];
+  if (!command) return next();
+
+  // If everything is ok
+  return command(msg, telegramBot, data.entities);
 }
