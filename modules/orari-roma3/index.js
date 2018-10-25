@@ -128,7 +128,7 @@ function fetchOrari(dipartimento, fromDate, toDate) {
     parser.addListener('error', reject);
 
     const url = util.format(
-      "http://orari.uniroma3.it/%s/esporta.php?from_Month=%d&from_Day=%d&from_Year=%d" +
+      "http://oldorari.uniroma3.it/%s/esporta.php?from_Month=%d&from_Day=%d&from_Year=%d" +
       "&to_Month=%d&to_Day=%d&to_Year=%d&export_type=xml&save_entry=Esporta+calendario", dipartimento.orariKey
       , fromDate.getMonth() + 1, fromDate.getDate(), fromDate.getFullYear()
       , toDate.getMonth() + 1, toDate.getDate(), toDate.getFullYear()
